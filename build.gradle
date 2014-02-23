@@ -2,6 +2,10 @@
 subprojects {
 	repositories {
     	mavenCentral()
+		flatDir {
+			name "fileRepo"
+			dirs "file://w:/projects/repo"
+		}
 	}
 	
 	ext.baseNameUpper = project.parent.name.capitalize()
@@ -25,10 +29,17 @@ subprojects {
 	sourceCompatibility = "1.6"
 	targetCompatibility = "1.6"
 	
-	group = "org.vaadin.risto.${baseNameLower}"
+	group = "com.marcwi.vaadin.risto.${baseNameLower}"
+	pubgroup = "org.vaadin.risto.${baseNameLower}"
 
 	//creates archives named "name-version.jar" and "name.war" where name is the name of the main project
 	archivesBaseName = baseNameLower
+	
+	uploadArchives {
+	  repositories {
+		  add project.repositories.fileRepo
+	  }
+	}
 }
 
 //addon project, only creates the Directory-compatible JAR
@@ -36,8 +47,8 @@ project(":addon") {
 	apply plugin: "eclipse"
 	eclipse.project.name = "${baseNameUpper}-addon"
 
-	version = "2.1.2"
-	vaadin.widgetset = "${group}.widgetset.${baseNameUpper}Widgetset"
+	version = "2.1.2.1"
+	vaadin.widgetset = "${pubgroup}.widgetset.${baseNameUpper}Widgetset"
 
 	dependencies {
 		testCompile "junit:junit:4.+"
@@ -61,7 +72,7 @@ project(":demo") {
 		compile "com.google.guava:guava:15.0"
 	}
 
-	vaadin.widgetset = "${group}.widgetset.${baseNameUpper}DemoWidgetset"
+	vaadin.widgetset = "${pubgroup}.widgetset.${baseNameUpper}DemoWidgetset"
 }
 
 task(dist, type: Sync, dependsOn: [':addon:jar', ':demo:war']) {
